@@ -96,4 +96,18 @@ local function on_attach(client, bufnr)
         end, { buffer = bufnr, desc = 'Toggle inlay hints' })
     end
 end
+
+
+--- Configures the given server with its settings and applying the regular
+--- client capabilities (+ the completion ones from blink.cmp).
+---@param server string
+---@param settings? table
+function M.configure_server(server, settings)
+    local capabilities = vim.lsp.protocol.make_client_capabilities()
+    capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+
+    require('lspconfig')[server].setup(
+        vim.tbl_deep_extend('error', { capabilities = capabilities, silent = true }, settings or {})
+    )
+end
 return M
