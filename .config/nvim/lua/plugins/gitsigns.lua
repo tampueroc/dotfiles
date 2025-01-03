@@ -3,7 +3,7 @@ return {
     {
         'lewis6991/gitsigns.nvim',
         event = { 'BufReadPre', 'BufNewFile' },
-        opts = {
+        opts =  {
             signs = {
                 add          = { text = '┃' },
                 change       = { text = '┃' },
@@ -26,9 +26,9 @@ return {
                 local gs = package.loaded.gitsigns
 
                 -- Gitlinker doesn't add descriptions.
-                local miniclue = require 'mini.clue'
-                miniclue.set_mapping_desc('n', '<leader>gc', 'Copy GitHub link')
-                miniclue.set_mapping_desc('v', '<leader>gc', 'Copy GitHub link')
+                -- local miniclue = require 'mini.clue'
+                -- miniclue.set_mapping_desc('n', '<leader>gc', 'Copy GitHub link')
+                -- miniclue.set_mapping_desc('v', '<leader>gc', 'Copy GitHub link')
 
                 -- Mappings.
                 ---@param lhs string
