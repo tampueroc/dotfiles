@@ -1,0 +1,16 @@
+[core]
+	editor = nvim
+    pager = delta
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[user]
+    name = Tomás Ampuero
+    email = tom.ampuero.c@gmail.com
