@@ -14,3 +14,8 @@
 [user]
     name = Tomás Ampuero
     email = tom.ampuero.c@gmail.com
+
+[alias]
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+    ll = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative -20
+    l1 = log --pretty=oneline --abbrev-commit --decorate
