@@ -24,7 +24,7 @@ vim.api.nvim_create_autocmd('VimEnter', {
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-    group = vim.api.nvim_create_augroup('mariasolos/close_with_q', { clear = true }),
+    group = vim.api.nvim_create_augroup('tampueroc/close_with_q', { clear = true }),
     desc = 'Close with <q>',
     pattern = {
         'git',

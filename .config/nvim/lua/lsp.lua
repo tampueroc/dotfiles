@@ -1,3 +1,4 @@
+local methods = vim.lsp.protocol.Methods
 local M = {}
 
 --- Sets up LSP keymaps and autocommands for the given buffer.
@@ -12,9 +13,6 @@ local function on_attach(client, bufnr)
         mode = mode or 'n'
         vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
     end
-
-    -- Set up my code action lightbulb.
-    require('lightbulb').attach_lightbulb(bufnr, client.id)
 
     keymap('grr', '<cmd>FzfLua lsp_references<cr>', 'vim.lsp.buf.references()')
 
@@ -97,6 +95,32 @@ local function on_attach(client, bufnr)
     end
 end
 
+-- Update mappings when registering dynamic capabilities.
+local register_capability = vim.lsp.handlers[methods.client_registerCapability]
+vim.lsp.handlers[methods.client_registerCapability] = function(err, res, ctx)
+    local client = vim.lsp.get_client_by_id(ctx.client_id)
+    if not client then
+        return
+    end
+
+    on_attach(client, vim.api.nvim_get_current_buf())
+
+    return register_capability(err, res, ctx)
+end
+
+vim.api.nvim_create_autocmd('LspAttach', {
+    desc = 'Configure LSP keymaps',
+    callback = function(args)
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+
+        -- I don't think this can happen but it's a wild world out there.
+        if not client then
+            return
+        end
+
+        on_attach(client, args.buf)
+    end,
+})
 
 --- Configures the given server with its settings and applying the regular
 --- client capabilities (+ the completion ones from blink.cmp).
