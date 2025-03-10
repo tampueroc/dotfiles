@@ -32,6 +32,16 @@ return {
                 single_file_support = true,
             })
 
+            configure_server('svelte', {
+                cmd = {
+                    "svelteserver",
+                    "--stdio"
+                },
+                filetypes = { "svelte" },
+                capabilities = svelte_lsp_capabilities,
+                root_dir = lspconfig.util.root_pattern('tsconfig.json', 'package.json', 'jsconfig.json', '.git')
+            })
+
             configure_server('ruff', {
                 cmd = { 'ruff', 'server' },
                 filetypes = { 'python' },
