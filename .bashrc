@@ -30,6 +30,3 @@ if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTI
         exec fish
     fi
 fi
-
-# Barerepo
-alias config='/usr/bin/git --git-dir=/Users/tomapuero/.cfg/ --work-tree=/Users/tomapuero'

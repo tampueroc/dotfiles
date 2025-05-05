@@ -1,5 +1,6 @@
-if status is-interactive
-    # Commands to run in interactive sessions can go here
+# Nothing to do if not inside an interactive shell.
+if not status is-interactive
+    return 0
 end
 
 if test -n "$GHOSTTY_RESOURCES_DIR"
@@ -7,6 +8,8 @@ if test -n "$GHOSTTY_RESOURCES_DIR"
 end
 
 abbr -a nv nvim
+abbr -a nvo --set-cursor "cd % && nvim"
+abbr -a nvp nvim +Man!
 
 set -U fish_greeting
 fzf --fish | source
