@@ -1,0 +1,30 @@
+[core]
+	editor = nvim
+    pager = delta
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[user]
+    name = Tom Ampuero
+    email = tom.ampuero@gmail.com
+[includeIf "gitdir:/Users/tomapuero/Code/CGD/"]
+    path = /Users/tomapuero/Code/CGD/.gitconfig
+
+[alias]
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
+    ll = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative -20
+    l1 = log --pretty=oneline --abbrev-commit --decorate
+
+[credential]
+	helper =
+    helper = /usr/local/share/gcm-core/git-credential-manager
+
+[credential "https://dev.azure.com"]
+	useHttpPath = true
