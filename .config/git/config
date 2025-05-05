@@ -13,7 +13,7 @@
 
 [user]
     name = Tom Ampuero
-    email = tom.ampuero@gmail.com
+    email = tom.ampuero.c@gmail.com
 [includeIf "gitdir:/Users/tomapuero/Code/CGD/"]
     path = /Users/tomapuero/Code/CGD/.gitconfig
 
