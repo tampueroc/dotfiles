@@ -17,6 +17,10 @@
 [includeIf "gitdir:/Users/tomapuero/Code/CGD/"]
     path = /Users/tomapuero/Code/CGD/.gitconfig
 
+[filter "git-ignore"]
+	clean = "sed '/#\\s*git-ignore$/d'"
+	smudge = cat
+
 [alias]
     lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
     ll = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative -20

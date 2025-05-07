@@ -34,10 +34,3 @@ require('lazy').setup(plugins, {
 	change_detection = { notify = false }
 	}
 )
-
-local start_opts = { cmd = { 'npx', '-y', 'typescript-language-server', '--stdio' }, name = 'start-stop-test' }
-local client1 = vim.lsp.start(start_opts)
-vim.lsp.stop_client(client1)
-local client2 = vim.lsp.start(start_opts)
-print('these should be different', client1, client2)
-
