@@ -1,0 +1,14 @@
+[notebook]
+dir = "~/Documents/notebook"
+
+[note]
+filename = "{{id}}"
+id-charset = "hex"
+id-length = 8
+id-case = "lower"
+
+template = "default.md"
+
+
+[tool]
+editor = "nvim"
