@@ -6,6 +6,7 @@ export XDG_STATE_HOME="$HOME/.local/state"
 
 export PATH="$HOME/nvim/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
 
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
 export SHELL_SESSIONS_DISABLE=1

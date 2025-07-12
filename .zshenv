@@ -1,6 +1,7 @@
 export XDG_CONFIG_HOME="$HOME/.config"
 export PATH="$HOME/.nvim/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
 
 # Man pages
 export MANPAGER='nvim +Man!'

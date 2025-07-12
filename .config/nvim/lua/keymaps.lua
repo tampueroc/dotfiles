@@ -20,3 +20,6 @@ vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('v', '>', '>gv')
 
 vim.keymap.set('n', '<leader>L', '<cmd>Lazy<cr>', { desc = 'Lazy' })
+
+-- Mark management.
+vim.keymap.set('c', 'dm', 'delmarks', { desc = 'Delete marks' })

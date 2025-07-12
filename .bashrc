@@ -2,6 +2,7 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 export PATH="$HOME/.nvim/bin:$PATH"  # Neovim
 export PATH="$HOME/.local/bin:$PATH" # Local scripts
+export PATH="$HOME/go/bin:$PATH"
 
 # Use neovim as the default editor.
 export EDITOR=nvim

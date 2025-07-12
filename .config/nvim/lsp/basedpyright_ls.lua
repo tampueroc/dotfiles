@@ -15,7 +15,7 @@ return {
             disableOrganizeImports = true,
             analysis = {
                 autoSearchPaths = true,
-                typeCHeckingMode = 'basic',
+                typeCheckingMode = 'basic',
                 diagnosticMode = 'openFilesOnly'
             }
         }

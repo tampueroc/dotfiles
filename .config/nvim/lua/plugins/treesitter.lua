@@ -62,6 +62,7 @@ return {
                 'tsx',
                 'typescript',
                 'vim',
+                'svelte',
                 'vimdoc',
                 'yaml',
             },

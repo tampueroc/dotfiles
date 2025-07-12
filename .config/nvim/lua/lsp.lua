@@ -210,8 +210,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
   desc = 'LSP: Disable hover capability from Ruff',
 })
 
-
-
 -- Set up LSP servers.
 vim.api.nvim_create_autocmd({ 'BufReadPre', 'BufNewFile' }, {
     once = true,

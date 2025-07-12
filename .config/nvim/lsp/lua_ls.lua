@@ -6,7 +6,7 @@
 return {
     cmd = { 'lua-language-server' },
     filetypes = { 'lua' },
-    root_markers = { '.luarc.json', '.luarc.jsonc' },
+    root_markers = { '.luarc.json', '.luarc.jsonc', '.git' },
     -- NOTE: These will be merged with the configuration file.
     settings = {
         Lua = {

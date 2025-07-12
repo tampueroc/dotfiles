@@ -22,6 +22,7 @@ require 'keymaps'
 require 'commands'
 require 'autocmds'
 require 'statusline'
+require 'marks'
 require 'lsp'
 
 require('lazy').setup(plugins, {

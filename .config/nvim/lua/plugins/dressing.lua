@@ -6,7 +6,6 @@ return {
         opts = {
             input = {
                 win_options = {
-                    -- Use a purple-ish border.
                     winhighlight = 'FloatBorder:LspFloatWinBorder',
                     winblend = 5,
                 },
