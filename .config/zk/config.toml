@@ -9,6 +9,16 @@ id-case = "lower"
 
 template = "default.md"
 
-
 [tool]
 editor = "nvim"
+
+[group.weekly]
+paths = ["weekly"]
+
+[group.weekly.note]
+filename = "{{format-date now '%Y-W%W'}}"
+template = "weekly.md"
+extension = "md"
+
+[alias]
+weekly = 'zk new --no-input "$ZK_NOTEBOOK_DIR/weekly"'
