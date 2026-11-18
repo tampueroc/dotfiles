@@ -1,164 +1,121 @@
--- Debugger
-local pack = require("pack")
+local add_on_event = require('vim-pack').add_on_event
+local add_on_filetype = require('vim-pack').add_on_file_type
 
-local keys = {
-    {
-        '<leader>db',
-        function()
-            require('dap').toggle_breakpoint()
-        end,
-        desc = 'Toggle breakpoint',
-    },
-    {
-        '<leader>dB',
-        '<cmd>FzfLua dap_breakpoints<cr>',
-        desc = 'List breakpoints',
-    },
-    {
-        '<F5>',
-        function()
-            require('dap').continue()
-        end,
-        desc = 'Continue',
-    },
-    {
-        '<F10>',
-        function()
-            require('dap').step_over()
-        end,
-        desc = 'Step over',
-    },
-    {
-        '<leader>dT',
-        function ()
-            require('dapui').float_element('console', { position = 'center' })
-        end,
-        desc = 'Debuger: Floating Console'
-    },
-    {
-        '<leader>dQ',
-        function ()
-            require('dap').terminate()
-        end,
-        desc = 'Debuger: Terminate Session'
-    },
+local arrows = require('icons').arrows
 
+-- Set up icons.
+local icons = {
+    Stopped = { '', 'DiagnosticWarn', 'DapStoppedLine' },
+    Breakpoint = '',
+    BreakpointCondition = '',
+    BreakpointRejected = { '', 'DiagnosticError' },
+    LogPoint = arrows.right,
 }
-
-keys[#keys + 1] = {
-    '<leader>de',
-    function()
-        -- The second call jumps into the evaluation window.
-        require('dapui').eval()
-        require('dapui').eval()
-    end,
-    desc = 'Evaluate expression',
-}
-keys[#keys + 1] = {
-    '<leader>dl',
-    function()
-        require('osv').launch { port = 8086 }
-    end,
-    desc = 'Launch Lua adapter',
-}
-
-local function configure()
-    local dap = require('dap')
-    local dapui = require('dapui')
-
-    -- Automatically open the UI when a new debug session is created.
-    dap.listeners.after.event_initialized['dapui_config'] = function()
-        dapui.open {}
-    end
-    dap.listeners.before.event_terminated['dapui_config'] = function()
-        dapui.close {}
-    end
-    dap.listeners.before.event_exited['dapui_config'] = function()
-        dapui.close {}
-    end
-
-    -- Lua configurations.
-    dap.adapters.nlua = function(callback, config)
-        callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or 8086 }
-    end
-
-    dap.configurations['lua'] = {
-        {
-            type = 'nlua',
-            request = 'attach',
-            name = 'Attach to running Neovim instance',
-        },
-    }
-
-    -- Python configurations
-    require('dap-python').setup()
-
-    -- Node configurations
-    require("dap").adapters["pwa-node"] = {
-        type = "server",
-        host = "localhost",
-        port = "${port}",
-        executable = {
-            command = "node",
-            args = {(os.getenv("HOME") .. "/Code/dap/vscode-js-debug/out/src/dapDebugServer.js"), "${port}"},
-        }
-    }
-    require("dap").configurations.javascript = {
-        {
-            type = "pwa-node",
-            request = "launch",
-            name = "Launch file",
-            program = "${file}",
-            cwd = "${workspaceFolder}",
-        },
-        {
-            name = 'Attach by port',
-            type = 'pwa-node',
-            request = 'attach',
-            port = 9229,
-            restart = true,
-            skipFiles = { '<node_internals>/**', 'node_modules/**' },
-            cwd = "${workspaceFolder}"
-        }
-    }
-
-
-    -- C configurations.
-    dap.adapters.codelldb = {
-        type = 'server',
-        host = 'localhost',
-        port = '${port}',
-        executable = {
-            command = 'codelldb',
-            args = { '--port', '${port}' },
-        },
-    }
+for name, sign in pairs(icons) do
+    sign = type(sign) == 'table' and sign or { sign }
+    vim.fn.sign_define('Dap' .. name, {
+        -- stylua: ignore
+        text = sign[1] --[[@as string]] .. ' ',
+        texthl = sign[2] or 'DiagnosticInfo',
+        linehl = sign[3],
+        numhl = sign[3],
+    })
 end
 
-pack.add({
-    { src = "mfussenegger/nvim-dap", setup = false },
-    { src = "nvim-neotest/nvim-nio", setup = false },
+-- Debugging.
+add_on_event('UIEnter', {
+    -- Lua adapter.
     {
-        src = "rcarriga/nvim-dap-ui",
-        module_name = "dapui",
+        src = 'jbyuki/one-small-step-for-vimkind',
+        setup = false,
+        on_setup = function()
+            vim.keymap.set('n', '<leader>dl', function()
+                require('osv').launch { port = 8086 }
+            end, { desc = 'Launch Lua adapter' })
+        end,
+    },
+})
+add_on_filetype('lua', {
+    {
+        src = 'igorlfs/nvim-dap-view',
+        module_name = 'dap-view',
         opts = {
-            floating = { border = 'rounded' },
-            controls = { enabled = false },
-            layouts = {
-                {
-                    elements = { { id = 'scopes', size = 1.0 } },
-                    position = 'bottom',
-                    size = 15,
-                },
+            winbar = {
+                sections = { 'scopes', 'breakpoints', 'threads', 'exceptions', 'repl', 'console' },
+                default_section = 'scopes',
             },
+            windows = { size = 18 },
+            -- When jumping through the call stack, try to switch to the buffer if already open in
+            -- a window, else use the last window to open the buffer.
+            switchbuf = 'usetab,uselast',
         },
     },
+    -- Virtual text.
     {
-        src = "theHamsta/nvim-dap-virtual-text",
+        src = 'theHamsta/nvim-dap-virtual-text',
         opts = { virt_text_pos = 'eol' },
     },
-    { src = "jbyuki/one-small-step-for-vimkind", setup = false },
-    { src = "mfussenegger/nvim-dap-python", setup = false },
+    {
+        src = 'mfussenegger/nvim-dap',
+        setup = false,
+        on_setup = function()
+            vim.keymap.set('n', '<leader>db', function()
+                require('dap').toggle_breakpoint()
+            end, { desc = 'Toggle breakpoint' })
+            vim.keymap.set('n', '<leader>dB', '<cmd>FzfLua dap_breakpoints<cr>', { desc = 'List breakpoints' })
+            vim.keymap.set('n', '<leader>dc', function()
+                require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+            end, { desc = 'Conditional breakpoint' })
+            vim.keymap.set('n', '<F5>', function()
+                require('dap').continue()
+            end, { desc = 'Continue' })
+            vim.keymap.set('n', '<F10>', function()
+                require('dap').step_over()
+            end, { desc = 'Step over' })
+            vim.keymap.set('n', '<F11>', function()
+                require('dap').step_into()
+            end, { desc = 'Step into' })
+            vim.keymap.set('n', '<F12>', function()
+                require('dap').step_out()
+            end, { desc = 'Step out' })
+
+            local dap = require 'dap'
+            local dv = require 'dap-view'
+
+            vim.api.nvim_create_autocmd('FileType', {
+                group = vim.api.nvim_create_augroup('mariasolos/dap_options', { clear = true }),
+                desc = 'Set options for DAP UI',
+                pattern = 'dap-view',
+                callback = function()
+                    vim.wo[0][0].listchars = 'space: ,tab:   '
+                end,
+            })
+
+            -- Automatically open the UI when a new debug session is created.
+            dap.listeners.before.attach['dap-view-config'] = function()
+                dv.open()
+            end
+            dap.listeners.before.launch['dap-view-config'] = function()
+                dv.open()
+            end
+            dap.listeners.before.event_terminated['dap-view-config'] = function()
+                dv.close()
+            end
+            dap.listeners.before.event_exited['dap-view-config'] = function()
+                dv.close()
+            end
+
+            -- Lua configurations.
+            dap.adapters.nlua = function(callback, config)
+                callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or 8086 }
+            end
+            dap.configurations['lua'] = {
+                {
+                    type = 'nlua',
+                    request = 'attach',
+                    name = 'Attach to running Neovim instance',
+                },
+            }
+        end,
+    },
 })
-configure()
-pack.map_keys(keys)
