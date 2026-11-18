@@ -1,121 +1,66 @@
-local add_on_event = require('vim-pack').add_on_event
-local add_on_filetype = require('vim-pack').add_on_file_type
+local add = require('pack').add
 
-local arrows = require('icons').arrows
-
--- Set up icons.
-local icons = {
-    Stopped = { '', 'DiagnosticWarn', 'DapStoppedLine' },
-    Breakpoint = '',
-    BreakpointCondition = '',
-    BreakpointRejected = { '', 'DiagnosticError' },
-    LogPoint = arrows.right,
+add {
+    { src = 'mfussenegger/nvim-dap', setup = false },
 }
-for name, sign in pairs(icons) do
-    sign = type(sign) == 'table' and sign or { sign }
-    vim.fn.sign_define('Dap' .. name, {
-        -- stylua: ignore
-        text = sign[1] --[[@as string]] .. ' ',
-        texthl = sign[2] or 'DiagnosticInfo',
-        linehl = sign[3],
-        numhl = sign[3],
-    })
+
+local dap = require('dap')
+local map = function(lhs, rhs, desc)
+    vim.keymap.set('n', lhs, rhs, { desc = desc })
 end
 
--- Debugging.
-add_on_event('UIEnter', {
-    -- Lua adapter.
-    {
-        src = 'jbyuki/one-small-step-for-vimkind',
-        setup = false,
-        on_setup = function()
-            vim.keymap.set('n', '<leader>dl', function()
-                require('osv').launch { port = 8086 }
-            end, { desc = 'Launch Lua adapter' })
-        end,
-    },
-})
-add_on_filetype('lua', {
-    {
-        src = 'igorlfs/nvim-dap-view',
-        module_name = 'dap-view',
-        opts = {
-            winbar = {
-                sections = { 'scopes', 'breakpoints', 'threads', 'exceptions', 'repl', 'console' },
-                default_section = 'scopes',
-            },
-            windows = { size = 18 },
-            -- When jumping through the call stack, try to switch to the buffer if already open in
-            -- a window, else use the last window to open the buffer.
-            switchbuf = 'usetab,uselast',
-        },
-    },
-    -- Virtual text.
-    {
-        src = 'theHamsta/nvim-dap-virtual-text',
-        opts = { virt_text_pos = 'eol' },
-    },
-    {
-        src = 'mfussenegger/nvim-dap',
-        setup = false,
-        on_setup = function()
-            vim.keymap.set('n', '<leader>db', function()
-                require('dap').toggle_breakpoint()
-            end, { desc = 'Toggle breakpoint' })
-            vim.keymap.set('n', '<leader>dB', '<cmd>FzfLua dap_breakpoints<cr>', { desc = 'List breakpoints' })
-            vim.keymap.set('n', '<leader>dc', function()
-                require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
-            end, { desc = 'Conditional breakpoint' })
-            vim.keymap.set('n', '<F5>', function()
-                require('dap').continue()
-            end, { desc = 'Continue' })
-            vim.keymap.set('n', '<F10>', function()
-                require('dap').step_over()
-            end, { desc = 'Step over' })
-            vim.keymap.set('n', '<F11>', function()
-                require('dap').step_into()
-            end, { desc = 'Step into' })
-            vim.keymap.set('n', '<F12>', function()
-                require('dap').step_out()
-            end, { desc = 'Step out' })
+map('<leader>db', dap.toggle_breakpoint, 'Toggle breakpoint')
+map('<leader>dB', '<cmd>FzfLua dap_breakpoints<cr>', 'List breakpoints')
+map('<leader>dc', function()
+    dap.set_breakpoint(vim.fn.input('Breakpoint condition: '))
+end, 'Conditional breakpoint')
+map('<leader>dT', dap.repl.toggle, 'Toggle debugger REPL')
+map('<leader>dQ', dap.terminate, 'Terminate debug session')
+map('<F5>', dap.continue, 'Continue')
+map('<F10>', dap.step_over, 'Step over')
+map('<F11>', dap.step_into, 'Step into')
+map('<F12>', dap.step_out, 'Step out')
 
-            local dap = require 'dap'
-            local dv = require 'dap-view'
+-- Install debugpy in the Python environment used by the adapter.
+dap.adapters.python = function(callback)
+    local python = vim.env.VIRTUAL_ENV and (vim.env.VIRTUAL_ENV .. '/bin/python') or 'python3'
+    callback { type = 'executable', command = python, args = { '-m', 'debugpy.adapter' } }
+end
+dap.configurations.python = {
+    { type = 'python', request = 'launch', name = 'Launch current file', program = '${file}' },
+}
 
-            vim.api.nvim_create_autocmd('FileType', {
-                group = vim.api.nvim_create_augroup('mariasolos/dap_options', { clear = true }),
-                desc = 'Set options for DAP UI',
-                pattern = 'dap-view',
-                callback = function()
-                    vim.wo[0][0].listchars = 'space: ,tab:   '
-                end,
-            })
-
-            -- Automatically open the UI when a new debug session is created.
-            dap.listeners.before.attach['dap-view-config'] = function()
-                dv.open()
-            end
-            dap.listeners.before.launch['dap-view-config'] = function()
-                dv.open()
-            end
-            dap.listeners.before.event_terminated['dap-view-config'] = function()
-                dv.close()
-            end
-            dap.listeners.before.event_exited['dap-view-config'] = function()
-                dv.close()
-            end
-
-            -- Lua configurations.
-            dap.adapters.nlua = function(callback, config)
-                callback { type = 'server', host = config.host or '127.0.0.1', port = config.port or 8086 }
-            end
-            dap.configurations['lua'] = {
-                {
-                    type = 'nlua',
-                    request = 'attach',
-                    name = 'Attach to running Neovim instance',
-                },
-            }
-        end,
+dap.adapters['pwa-node'] = {
+    type = 'server',
+    host = 'localhost',
+    port = '${port}',
+    executable = {
+        command = 'node',
+        args = { vim.fn.expand('~/Code/dap/vscode-js-debug/out/src/dapDebugServer.js'), '${port}' },
     },
-})
+}
+dap.configurations.javascript = {
+    {
+        type = 'pwa-node',
+        request = 'launch',
+        name = 'Launch file',
+        program = '${file}',
+        cwd = '${workspaceFolder}',
+    },
+    {
+        type = 'pwa-node',
+        request = 'attach',
+        name = 'Attach by port',
+        port = 9229,
+        restart = true,
+        skipFiles = { '<node_internals>/**', 'node_modules/**' },
+        cwd = '${workspaceFolder}',
+    },
+}
+
+dap.adapters.codelldb = {
+    type = 'server',
+    host = 'localhost',
+    port = '${port}',
+    executable = { command = 'codelldb', args = { '--port', '${port}' } },
+}
