@@ -21,11 +21,12 @@ return {
                 version = 'LuaJIT',
             },
             workspace = {
-                checkThirdParty = false,
                 library = {
                     vim.env.VIMRUNTIME,
                     '${3rd}/luv/library',
                 },
+                userThirdParty = {os.getenv("HOME") .. ".local/share/LuaAddons"},
+                checkThirdParty = "Apply"
             },
         },
     },

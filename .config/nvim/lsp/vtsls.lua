@@ -13,7 +13,7 @@ local jsts_settings = {
 return {
     cmd = { 'vtsls', '--stdio' },
     filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
-    root_markers = { 'tsconfig.json', 'jsonconfig.json' },
+    root_markers = { 'tsconfig.json', 'jsconfig.json' },
     settings = {
         typescript = jsts_settings,
         javascript = jsts_settings,

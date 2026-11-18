@@ -2,6 +2,8 @@ if not vim.pack then
     error("This configuration requires Neovim with vim.pack (0.12 or later)")
 end
 
+vim.cmd.colorscheme 'scheme'
+
 require 'settings'
 require 'keymaps'
 require 'commands'
@@ -11,3 +13,4 @@ require 'marks'
 require 'lsp'
 
 require("user.terminal.integration").setup()
+require("user.tabline").setup()

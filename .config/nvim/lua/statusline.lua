@@ -11,6 +11,24 @@ function M.git_component()
     return string.format(' %s', head)
 end
 
+--- Window-local cwd, shown only when it differs from the tab cwd.
+---@return string
+function M.lcd_component()
+    local window_cwd = vim.fn.getcwd(0, 0)
+    local tab_cwd = vim.fn.getcwd(-1, 0)
+
+    if window_cwd == tab_cwd then
+        return ''
+    end
+
+    local label = vim.fn.fnamemodify(window_cwd, ':~:.')
+    if #label > 30 then
+        label = vim.fn.pathshorten(label)
+    end
+
+    return string.format('%%#StatuslineModeSeparatorOther#󰉋 lcd: %s/', label)
+end
+
 --- File-content encoding for the current buffer.
 ---@return string
 function M.encoding_component()
@@ -25,8 +43,10 @@ local progress_status = {
     title = nil,
 }
 
+local statusline_group = vim.api.nvim_create_augroup('mariasolos/statusline', { clear = true })
+
 vim.api.nvim_create_autocmd('LspProgress', {
-    group = vim.api.nvim_create_augroup('mariasolos/statusline', { clear = true }),
+    group = statusline_group,
     desc = 'Update LSP progress in statusline',
     pattern = { 'begin', 'end' },
     callback = function(args)
@@ -52,6 +72,15 @@ vim.api.nvim_create_autocmd('LspProgress', {
         end
     end,
 })
+
+vim.api.nvim_create_autocmd('DirChanged', {
+    group = statusline_group,
+    desc = 'Update cwd in statusline',
+    callback = function()
+        vim.cmd.redrawstatus()
+    end,
+})
+
 --- The latest LSP progress message.
 ---@return string
 function M.lsp_progress_component()
@@ -99,6 +128,7 @@ function M.render()
     return table.concat {
         concat_components {
             M.git_component(),
+            M.lcd_component(),
         },
         '%#StatusLine#%=',
         concat_components {

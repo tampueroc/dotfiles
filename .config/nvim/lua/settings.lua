@@ -1,21 +1,27 @@
--- Set <space> as the leader key.
+-- Leader
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
+-- Built-in plugins
 vim.g.netrw_banner = 0
 vim.g.netrw_winsize = 25
 vim.g.netrw_browse_split = 0
 
--- Use an indentation of 4 spaces.
-vim.opt.nu = true
-vim.o.sw = 4
-vim.o.ts = 4
-vim.o.et = true
+-- Editing
+vim.o.shiftwidth = 4
+vim.o.tabstop = 4
+vim.o.expandtab = true
+vim.o.updatetime = 50
 
-vim.opt.signcolumn = "yes"
+-- UI
+vim.o.number = true
+vim.o.signcolumn = 'yes'
+vim.o.guicursor = ''
+vim.o.termguicolors = true
 
-vim.opt.guicursor = ""
-vim.opt.termguicolors = true
-vim.opt.updatetime = 50
-
+-- Completion / command-line
 vim.opt.wildignore:append { '.DS_Store' }
+
+vim.o.splitright = true
+vim.o.splitbelow = true
+vim.o.title = true

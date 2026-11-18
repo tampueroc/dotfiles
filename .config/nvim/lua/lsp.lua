@@ -202,8 +202,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
     if client == nil then
       return
     end
-    if client.name == 'ruff' then
-      -- Disable hover in favor of Pyright
+    if client.name == 'ruff_ls' then
+      -- Leave Python hover documentation to ty.
       client.server_capabilities.hoverProvider = false
     end
   end,

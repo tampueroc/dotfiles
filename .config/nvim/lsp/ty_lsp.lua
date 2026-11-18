@@ -9,18 +9,6 @@ return {
         'requirements.txt',
         'Pipfile',
         'mypy.ini'
-    },
-    settings = {
-        ty = {
-            trace = {
-                server = "messages"
-            },
-            experimental = {
-                completions = {
-                    enable = true
-                }
-            }
-        }
     }
 }
 
