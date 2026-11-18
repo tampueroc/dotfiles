@@ -1,101 +1,107 @@
+local pack = require("pack")
+
+local parsers = {
+    "bash",
+    "c",
+    "cpp",
+    "gitcommit",
+    "go",
+    "graphql",
+    "html",
+    "hyprlang",
+    "java",
+    "javascript",
+    "json",
+    "json5",
+    "lua",
+    "markdown",
+    "markdown_inline",
+    "python",
+    "query",
+    "rasi",
+    "regex",
+    "rust",
+    "scss",
+    "toml",
+    "tsx",
+    "typescript",
+    "vim",
+    "vimdoc",
+    "yaml",
+}
+
+local function with_tree_sitter_cli(callback)
+    if vim.fn.executable("tree-sitter") ~= 1 then
+        vim.notify("tree-sitter CLI is not installed; skipping nvim-treesitter parser install", vim.log.levels.WARN)
+        return
+    end
+
+    callback()
+end
+
 -- Highlight, edit, and navigate code.
-return {
+pack.add({
     {
-        'nvim-treesitter/nvim-treesitter',
-        dependencies = {
-            {
-                'nvim-treesitter/nvim-treesitter-context',
-                opts = {
-                    -- Avoid the sticky context from growing a lot.
-                    max_lines = 3,
-                    -- Match the context lines to the source code.
-                    multiline_threshold = 1,
-                    -- Disable it when the window is too small.
-                    min_window_height = 20,
-                },
-                keys = {
-                    {
-                        '[c',
-                        function()
-                            -- Jump to previous change when in diffview.
-                            if vim.wo.diff then
-                                return '[c'
-                            else
-                                vim.schedule(function()
-                                    require('treesitter-context').go_to_context()
-                                end)
-                                return '<Ignore>'
-                            end
-                        end,
-                        desc = 'Jump to upper context',
-                        expr = true,
-                    },
-                },
-            },
-        },
-        version = false,
-        build = ':TSUpdate',
-        opts = {
-            ensure_installed = {
-                'bash',
-                'c',
-                'cpp',
-                'gitcommit',
-                'graphql',
-                'html',
-                'java',
-                'javascript',
-                'json',
-                'json5',
-                'jsonc',
-                'lua',
-                'markdown',
-                'markdown_inline',
-                'python',
-                'query',
-                'rasi',
-                'regex',
-                'rust',
-                'scss',
-                'toml',
-                'tsx',
-                'typescript',
-                'vim',
-                'svelte',
-                'vimdoc',
-                'yaml',
-            },
-            highlight = { enable = true },
-            incremental_selection = {
-                enable = true,
-                keymaps = {
-                    init_selection = '<cr>',
-                    node_incremental = '<cr>',
-                    scope_incremental = false,
-                    node_decremental = '<bs>',
-                },
-            },
-            indent = {
-                enable = true,
-                -- Treesitter unindents Yaml lists for some reason.
-                disable = { 'yaml' },
-            },
-        },
-        config = function(_, opts)
-            local toggle_inc_selection_group =
-                vim.api.nvim_create_augroup('mariasolos/toggle_inc_selection', { clear = true })
-            vim.api.nvim_create_autocmd('CmdwinEnter', {
-                desc = 'Disable incremental selection when entering the cmdline window',
-                group = toggle_inc_selection_group,
-                command = 'TSBufDisable incremental_selection',
-            })
-            vim.api.nvim_create_autocmd('CmdwinLeave', {
-                desc = 'Enable incremental selection when leaving the cmdline window',
-                group = toggle_inc_selection_group,
-                command = 'TSBufEnable incremental_selection',
+        src = "nvim-treesitter/nvim-treesitter",
+        on_setup = function()
+            -- Main-branch nvim-treesitter ships queries under `runtime/queries/`,
+            -- which isn't on rtp by default. Prepend it so highlights/folds/indents
+            -- are visible to `vim.treesitter.start`.
+            local init = vim.api.nvim_get_runtime_file("lua/nvim-treesitter/init.lua", false)[1]
+            if init then
+                vim.opt.runtimepath:prepend(vim.fn.fnamemodify(init, ":h:h:h") .. "/runtime")
+            end
+
+            require("nvim-treesitter").setup({
+                install_dir = vim.fn.stdpath("data") .. "/site",
             })
 
-            require('nvim-treesitter.configs').setup(opts)
+            vim.api.nvim_create_autocmd("FileType", {
+                pattern = parsers,
+                group = vim.api.nvim_create_augroup("user/treesitter-start", { clear = true }),
+                callback = function()
+                    local ok = pcall(vim.treesitter.start)
+                    if ok and vim.bo.filetype ~= "yaml" then
+                        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+                    end
+                end,
+            })
         end,
     },
-}
+    {
+        src = "nvim-treesitter/nvim-treesitter-context",
+        module_name = "treesitter-context",
+        opts = {
+            -- Avoid the sticky context from growing a lot.
+            max_lines = 3,
+            -- Match the context lines to the source code.
+            multiline_threshold = 1,
+            -- Disable it when the window is too small.
+            min_window_height = 20,
+        },
+        on_setup = function()
+            vim.keymap.set("n", "[c", function()
+                -- Jump to previous change when in diffview.
+                if vim.wo.diff then
+                    return "[c"
+                else
+                    vim.schedule(function()
+                        require("treesitter-context").go_to_context()
+                    end)
+                    return "<Ignore>"
+                end
+            end, { desc = "Jump to upper context", expr = true })
+        end,
+    },
+})
+
+pack.on_plugin_update("nvim-treesitter", function()
+    with_tree_sitter_cli(function()
+        -- Re-install (picks up any newly-added parsers from the list above)
+        -- and update existing ones.
+        require("nvim-treesitter").install(parsers):wait(300000)
+        require("nvim-treesitter").update():wait(300000)
+    end)
+end)
+
+return {}

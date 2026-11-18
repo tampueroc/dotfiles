@@ -1,10 +1,9 @@
 -- Picker, finder, etc.
-return {
-    {
-        'ibhagwan/fzf-lua',
-        cmd = 'FzfLua',
+local pack = require("pack")
+local config = {
         keys = {
             { '<leader>f<', '<cmd>FzfLua resume<cr>', desc = 'Resume last command' },
+            { '<leader>bs', '<cmd>FzfLua buffers<cr>', desc = 'Select buffer' },
             {
                 '<leader>fb',
                 function()
@@ -25,6 +24,35 @@ return {
             { '<leader>fg', '<cmd>FzfLua live_grep<cr>', desc = 'Grep' },
             { '<leader>fg', '<cmd>FzfLua grep_visual<cr>', desc = 'Grep', mode = 'x' },
             { '<leader>fh', '<cmd>FzfLua help_tags<cr>', desc = 'Help' },
+            {
+                '<C-\\>',
+                function()
+                    if vim.v.count > 0 then
+                        require('fzf-lua').lines()
+                    else
+                        require('fzf-lua').buffers()
+                    end
+                end,
+                desc = 'Buffers or lines',
+            },
+            {
+                '<M-\\>',
+                function()
+                    require('fzf-lua').oldfiles()
+                end,
+                desc = 'Recently opened files',
+            },
+            {
+                '<M-/>',
+                function()
+                    if vim.v.count > 0 then
+                        require('fzf-lua').live_grep()
+                    else
+                        require('fzf-lua').files()
+                    end
+                end,
+                desc = 'Files or grep',
+            },
             {
                 '<leader>fr',
                 function()
@@ -55,7 +83,6 @@ return {
                 keymap = {
                     builtin = {
                         ['<C-/>'] = 'toggle-help',
-                        ['<C-a>'] = 'toggle-fullscreen',
                         ['<C-i>'] = 'toggle-preview',
                         ['<C-f>'] = 'preview-page-down',
                         ['<C-b>'] = 'preview-page-up',
@@ -119,7 +146,7 @@ return {
                 },
             }
         end,
-        init = function()
+        on_setup = function()
             ---@diagnostic disable-next-line: duplicate-set-field
             vim.ui.select = function(items, opts, on_choice)
                 local ui_select = require 'fzf-lua.providers.ui_select'
@@ -143,5 +170,13 @@ return {
                 end
             end
         end,
-    },
 }
+
+pack.add({
+    {
+        src = "ibhagwan/fzf-lua",
+        opts = config.opts,
+        on_setup = config.on_setup,
+    },
+})
+pack.map_keys(config.keys)

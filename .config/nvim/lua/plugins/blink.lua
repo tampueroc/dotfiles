@@ -1,10 +1,8 @@
 -- Auto-completion:
-return {
+require("pack").add({
     {
-        'saghen/blink.cmp',
-        build = 'cargo build --release',
-        version = '1.*',
-        event = 'InsertEnter',
+        src = "saghen/blink.cmp",
+        version = vim.version.range("1.*"),
         opts = {
             fuzzy = { implementation = "prefer_rust_with_warning" },
             keymap = {
@@ -45,11 +43,9 @@ return {
                 end,
             }
         },
-        config = function(_, opts)
-            require('blink.cmp').setup(opts)
-
-            -- Extend neovim's client capabilities with the completion ones.
+        on_setup = function()
+            -- Extend Neovim's client capabilities before an LSP client starts.
             vim.lsp.config('*', { capabilities = require('blink.cmp').get_lsp_capabilities(nil, true) })
         end,
     },
-}
+})

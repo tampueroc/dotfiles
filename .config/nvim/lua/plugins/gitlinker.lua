@@ -1,20 +1,27 @@
--- Generate and open GitHub links.
-return {
-    {
-        'ruifm/gitlinker.nvim',
-        dependencies = { 'nvim-lua/plenary.nvim' },
-        -- Loaded when attaching gitsigns.
-        lazy = true,
-        opts = { mappings = '<leader>gc' },
-        config = function()
-            local gitlinker = require 'gitlinker'
+local pack = require("pack")
 
-            gitlinker.setup {
-                mappings = '<leader>gc',
-                callbacks = {
-                    ['github.palantir.build'] = gitlinker.hosts.get_github_type_url,
+pack.add({
+    {
+        src = "linrongbin16/gitlinker.nvim",
+        name = "linrongbin-gitlinker.nvim",
+        module_name = "gitlinker",
+        opts = function()
+            return {
+                router = {
+                    browse = {
+                        ["^github%.palantir%.build"] = require("gitlinker.routers").github_browse,
+                    },
+                    blame = {
+                        ["^github%.palantir%.build"] = require("gitlinker.routers").github_blame,
+                    },
                 },
             }
         end,
+        on_setup = function()
+            vim.keymap.set({ "n", "v" }, "<leader>gc", "<cmd>GitLink<cr>", { desc = "Yank git link" })
+            vim.keymap.set({ "n", "v" }, "<leader>go", "<cmd>GitLink! blame<cr>", { desc = "Open git link" })
+        end,
     },
-}
+})
+
+return {}

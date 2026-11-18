@@ -1,9 +1,4 @@
 -- Surround selections, add quotes, etc.
-return {
-    {
-        'kylechui/nvim-surround',
-        event = 'VeryLazy',
-        opts = {
-        },
-    },
-}
+require("pack").add({
+    { src = "kylechui/nvim-surround" },
+})

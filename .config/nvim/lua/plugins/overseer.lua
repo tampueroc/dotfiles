@@ -1,6 +1,6 @@
-return {
+require("pack").add({
     {
-        'stevearc/overseer.nvim',
+        src = "stevearc/overseer.nvim",
         opts = {
             dap = false,
             task_list = {
@@ -29,20 +29,8 @@ return {
             task_win = {
                 win_opts = { winblend = 5 },
             },
-            keys = {
-                {
-                    '<leader>ot',
-                    '<cmd>OverseerToggle<cr>',
-                    desc = 'Toggle task window',
-                }
-            },
         },
-        keys = {
-            {
-                '<leader>ot',
-                '<cmd>OverseerToggle<cr>',
-                desc = 'Toggle task window',
-            },
-        }
-    }
-}
+    },
+})
+
+vim.keymap.set('n', '<leader>ot', '<cmd>OverseerToggle<cr>', { desc = 'Toggle task window' })
