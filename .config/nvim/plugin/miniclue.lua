@@ -127,5 +127,3 @@ pack.add_on_event("UIEnter", {
         end,
     },
 })
-
-return {}

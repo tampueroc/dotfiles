@@ -23,5 +23,3 @@ pack.add({
         end,
     },
 })
-
-return {}

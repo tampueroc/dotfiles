@@ -56,5 +56,3 @@ pack.add_on_event({ "BufReadPre", "BufNewFile" }, {
         },
     },
 })
-
-return {}

@@ -9,6 +9,5 @@ require 'autocmds'
 require 'statusline'
 require 'marks'
 require 'lsp'
-require 'plugins'
 
 require("user.terminal.integration").setup()

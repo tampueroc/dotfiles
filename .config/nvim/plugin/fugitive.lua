@@ -6,5 +6,3 @@ pack.add({
         setup = false,
     },
 })
-
-return {}

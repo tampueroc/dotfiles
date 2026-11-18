@@ -103,5 +103,3 @@ pack.on_plugin_update("nvim-treesitter", function()
         require("nvim-treesitter").update():wait(300000)
     end)
 end)
-
-return {}

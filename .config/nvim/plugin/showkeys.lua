@@ -9,5 +9,3 @@ pack.add({
         src = "NvChad/showkeys",
     },
 })
-
-return {}
