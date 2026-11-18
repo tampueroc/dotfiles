@@ -93,6 +93,8 @@ pack.add_on_event("UIEnter", {
                     { mode = "n", keys = "[", desc = "+prev" },
                     { mode = "n", keys = "]", desc = "+next" },
                     -- Builtins.
+                    miniclue.gen_clues.square_brackets(),
+                    miniclue.gen_clues.builtin_completion(),
                     miniclue.gen_clues.g(),
                     miniclue.gen_clues.marks(),
                     miniclue.gen_clues.registers(),
