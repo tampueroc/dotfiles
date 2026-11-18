@@ -16,6 +16,8 @@
     email = tom.ampuero.c@gmail.com
 [includeIf "gitdir:/Users/tomapuero/Code/CGD/"]
     path = /Users/tomapuero/Code/CGD/.gitconfig
+[includeIf "gitdir:/Users/tomapuero/Code/Work/CGD/"]
+    path = /Users/tomapuero/Code/CGD/.gitconfig
 
 [filter "git-ignore"]
 	clean = "sed '/#\\s*git-ignore$/d'"
