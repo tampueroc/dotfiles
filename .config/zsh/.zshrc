@@ -1,5 +1,8 @@
 setopt auto_cd
 
+# Manage dotfiles through the bare repository.
+alias config='git --git-dir="$HOME/.cfg" --work-tree="$HOME"'
+
 # When deleting with <C-w>, delete file names at a time.
 WORDCHARS=${WORDCHARS/\/}
 
