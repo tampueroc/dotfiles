@@ -22,12 +22,3 @@ export FZF_DEFAULT_OPTS="--color=fg:#f8f8f2,bg:#0e1419,hl:#e11299,fg+:#f8f8f2,bg
 
 # If not running interactively, stop here.
 [[ $- != *i* ]] && return
-
-if [[ $(ps --no-header --pid=$PPID --format=comm) != "fish" && -z ${BASH_EXECUTION_STRING} && ${SHLVL} == 1 ]]; then
-    # Let fish whether it's a login shell.
-    if ! shopt -q login_shell; then
-        exec fish --login
-    else
-        exec fish
-    fi
-fi
