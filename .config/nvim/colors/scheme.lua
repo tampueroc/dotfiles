@@ -8,7 +8,7 @@ vim.o.termguicolors = true
 vim.g.colors_name = "scheme"
 
 local c = {
-  bg = "#1A1B26",
+  bg = "#0E1419", -- Match ghostty/config background.
   bg_dark = "#15161E",
   bg_highlight = "#292E42",
   selection = "#33467C",
