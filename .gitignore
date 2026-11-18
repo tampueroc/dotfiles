@@ -1,2 +1,9 @@
 /.cfg/
 .DS_Store
+
+# Local shell history, completion caches, and editor logs.
+/.zsh_history
+/.zcompdump*
+/.config/zsh/.zsh_history
+/.config/zsh/.zcompdump*
+/.config/nvim/nvim.log
